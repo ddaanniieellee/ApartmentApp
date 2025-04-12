@@ -7,7 +7,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(120), nullable=False)
-    phone =db.Column(db.String(10), nullable=False)
+    phone =db.Column(db.String(10))
     type= db.Column(db.String(20), nullable=False)
     __mapper_args__ ={'polymorphic_identity':'user', 'polymorphic_on':type
                      }
