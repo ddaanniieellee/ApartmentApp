@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, current_user, unset_jwt_cookies, se
 
 
 from.index import index_views
+from App.models import User
 
 from App.controllers import (
     login
@@ -30,6 +31,7 @@ def identify_page():
 @auth_views.route('/login', methods=['POST'])
 def login_action():
     data = request.form
+    user = User.query.filter_by(username=data['username']).first()
     token = login(data['username'], data['password'])
     response = redirect(request.referrer)
     if not token:
@@ -37,6 +39,13 @@ def login_action():
     else:
         flash('Login Successful')
         set_access_cookies(response, token) 
+        if user.type=='Landlord':
+            flash('Landlord')
+            return render_template("listing.html")
+        else:
+            flash('tenant')
+            return render_template("view.html")
+
     return response
 
 @auth_views.route('/logout', methods=['GET'])
