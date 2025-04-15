@@ -21,6 +21,7 @@ def add_views(app):
     for view in views:
         app.register_blueprint(view)
 
+
 def create_app(overrides={}):
     app = Flask(__name__, static_url_path='/static')
     load_config(app, overrides)
@@ -37,4 +38,4 @@ def create_app(overrides={}):
     def custom_unauthorized_response(error):
         return render_template('401.html', error=error), 401
     app.app_context().push()
-    return app
+    return app 
