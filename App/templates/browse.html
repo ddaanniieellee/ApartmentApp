@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Browse Properties{% endblock %}
+
+{% block brand %}
+  <!-- Override the brand block to display plain text instead of a link -->
+  <span class="brand-logo left">
+    {% block brand_text %}Browse Properties{% endblock %}
+  </span>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section / Filter Buttons -->
+<div class="section grey lighten-3" style="padding: 30px 0;">
+  <div class="container center-align">
+    <h4 class="header">Real Reviews. Real Homes.</h4>
+    <p class="flow-text">Browse our curated listings for every lifestyle.</p>
+    <div class="row" style="margin-top: 20px;">
+      <div class="col s12 m4" style="margin-bottom:10px;">
+        <a href="?filter=all" class="btn-large blue-grey lighten-1">ALL</a>
+      </div>
+      <div class="col s12 m4" style="margin-bottom:10px;">
+        <a href="?filter=rent" class="btn-large blue-grey lighten-1">RENT</a>
+      </div>
+      <div class="col s12 m4" style="margin-bottom:10px;">
+        <a href="?filter=rate" class="btn-large blue-grey lighten-1">RATE</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Property Cards Grid -->
+<div class="section">
+  <div class="row">
+    {% if properties %}
+      {% for property in properties %}
+      <div class="col s12 m4 l4">
+        <div class="card hoverable" style="margin: 5px;">
+          <div class="card-image">
+            <img src="{{ property.image_url or 'https://via.placeholder.com/350x200' }}" alt="{{ property.title }}">
+          </div>
+          <div class="card-content">
+            <span class="card-title" style="font-size:1.3rem;">{{ property.title }}</span>
+            <p>{{ property.description }}</p>
+            <p><strong>Location:</strong> {{ property.location }}</p>
+          </div>
+          <div class="card-action">
+            <a href="/property/{{ property.id }}">VIEW DETAILS</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p>No properties available at this time.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
