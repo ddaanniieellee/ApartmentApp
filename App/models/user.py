@@ -1,11 +1,17 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 from App.database import db
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.expression import func
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(120), nullable=False)
+    phone =db.Column(db.String(10))
+    type= db.Column(db.String(20), nullable=False)
+    __mapper_args__ ={'polymorphic_identity':'user', 'polymorphic_on':type
+                     }
 
     def __init__(self, username, password):
         self.username = username
