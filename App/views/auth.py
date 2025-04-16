@@ -28,10 +28,20 @@ def identify_page():
     return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.username}")
     
 
+@auth_views.route('/signup', methods=['GET'])
+def signup_page():
+    return render_template('signup.html')
+
+@auth_views.route('/signup', methods=['POST'])
+def signup_action():
+    data = request.form
+    flash(f"User {data['username']} created!")
+    create_user(data['username'], data['password'])
+    return redirect(url_for('auth_views.get_user_page'))
+
 @auth_views.route('/login', methods=['GET'])
 def login_page():
     return render_template('login.html')
-
 
 @auth_views.route('/login', methods=['POST'])
 def login_action():
