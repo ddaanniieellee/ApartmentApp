@@ -7,7 +7,7 @@ class User(db.Model):
     username =  db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=True, unique=True)
-    phone = db.Column(db.String(20), nullable=False, unique=True)
+    phone = db.Column(db.String(20), nullable=True, unique=True)
     role = db.Column(db.String(10), nullable=False)  # 'tenant' or 'landlord'
 
 
