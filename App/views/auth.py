@@ -1,16 +1,19 @@
+from sqlite3 import IntegrityError
 from flask import Blueprint, render_template, jsonify, request, flash, send_from_directory, flash, redirect, url_for
-from flask_jwt_extended import jwt_required, current_user, unset_jwt_cookies, set_access_cookies
+from flask_jwt_extended import create_access_token, jwt_required, current_user, unset_jwt_cookies, set_access_cookies
+
+from App.controllers.user import get_all_users
 
 
 from.index import index_views
 from App.models import User
+from App.database import db
 
 from App.controllers import (
     login
 )
 
 auth_views = Blueprint('auth_views', __name__, template_folder='../templates')
-
 
 
 
@@ -33,34 +36,51 @@ def signup_page():
     return render_template('signup.html')
 
 @auth_views.route('/signup', methods=['POST'])
-def signup_action():
+def signup_user_view():
     data = request.form
-    flash(f"User {data['username']} created!")
-    create_user(data['username'], data['password'])
-    return redirect(url_for('auth_views.get_user_page'))
+    username = data.get('username')
+    password = data.get('password')
+
+    # Check if the user already exists
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
+        flash('Username already exists!')
+        return render_template('signup.html') 
+    else:
+        try:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('User Created!')
+            return render_template('index.html')
+        except IntegrityError:
+            db.session.rollback()
+            return render_template('signup.html')
 
 @auth_views.route('/login', methods=['GET'])
 def login_page():
     return render_template('login.html')
 
-@auth_views.route('/login', methods=['POST'])
-def login_action():
-    data = request.form
-    user = User.query.filter_by(username=data['username']).first()
-    token = login(data['username'], data['password'])
-    response = redirect(request.referrer)
-    if not token:
-        flash('Bad username or password given'), 401
-    else:
-        flash('Login Successful')
-        set_access_cookies(response, token) 
-        if user.type=='Landlord':
-            flash('Landlord')
-            return render_template("listing.html")
-        else:
-            flash('tenant')
-            return render_template("view.html")
 
+def login_user(username, password):
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        token = create_access_token(identity=username)
+        response = jsonify(access_token=token)
+        flash('Login Successful')
+        set_access_cookies(response, token)
+
+        return render_template('index.html', response=response, token=token)
+
+    flash('Bad username or password given')
+    return render_template('login.html'), 401
+
+@auth_views.route('/login', methods=['POST'])
+def user_login_view():
+    data = request.form
+    response = login_user(data['username'], data['password'])
+    if not response:
+        return jsonify(message='bad username or password given'), 403
     return response
 
 @auth_views.route('/logout', methods=['GET'])
