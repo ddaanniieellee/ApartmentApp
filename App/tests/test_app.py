@@ -54,7 +54,7 @@ def empty_db():
     create_db()
     with app.app_context():
         create_user("bob", "bob@example.com", "bobpass")
-        create_user("rick", "rick@example.com", "rickpass")
+        # Remove or conditionally create "rick" based on test requirements
     yield app.test_client()
     db.drop_all()
 
