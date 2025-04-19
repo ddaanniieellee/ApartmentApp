@@ -22,10 +22,9 @@ class User(db.Model):
 
     def __init__(self, username, email, password, role="tenant"):
         self.username = username
-        self.set_password(password)
         self.email = email
         self.role = role
-
+        self.set_password(password)
     def get_json(self):
         return {
             'id': self.id,
@@ -35,8 +34,6 @@ class User(db.Model):
         }
 
     def set_password(self, password):
-        self.password = generate_password_hash(password)
-
+        self.password = generate_password_hash(password) 
     def check_password(self, password):
-        return check_password_hash(self.password, password)
-    
+        return check_password_hash(self.password, password) 
