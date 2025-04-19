@@ -2,7 +2,12 @@ from App.models import User
 from App.database import db
 
 def create_user(username, email, password):
-    newuser = User(username=username,email=email,password=password)
+    if not username or not email or not password:
+        raise ValueError("Username, email, and password are required.")
+    existing_user = get_user_by_username(username)
+    if existing_user:
+        raise ValueError(f"User with username '{username}' already exists.")
+    newuser = User(username=username, email=email, password=password)
     db.session.add(newuser)
     db.session.commit()
     return newuser
@@ -20,14 +25,15 @@ def get_all_users_json():
     users = User.query.all()
     if not users:
         return []
-    users = [user.get_json() for user in users]
-    return users
+    return [user.get_json() for user in users if user]
 
 def update_user(id, username):
     user = get_user(id)
-    if user:
-        user.username = username
-        db.session.add(user)
-        return db.session.commit()
-    return None
-    
+    if not user:
+        raise ValueError(f"User with ID '{id}' not found.")
+    if not username:
+        raise ValueError("Username cannot be empty.")
+    user.username = username
+    db.session.add(user)
+    db.session.commit()
+    return user
