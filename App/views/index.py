@@ -51,6 +51,10 @@ def index_page():
 def get_listing_page():
     return render_template('listings.html')
 
+@index_views.route('/addproperty', methods=['GET'])
+def add_property_page():
+    return render_template('addproperty.html')
+
 @index_views.route('/init', methods=['GET'])
 def init():
     initialize()
