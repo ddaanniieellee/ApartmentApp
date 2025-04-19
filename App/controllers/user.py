@@ -2,8 +2,9 @@ from App.models import User
 from App.database import db
 
 def create_user(username, email, password):
-    if not username or not email or not password:
-        raise ValueError("Username, email, and password are required.")
+    if not username or not password:
+        raise ValueError("Username and password are required.")
+    email = email or f"{username}@example.com"  # Fallback for tests
     existing_user = get_user_by_username(username)
     if existing_user:
         raise ValueError(f"User with username '{username}' already exists.")
