@@ -22,7 +22,7 @@ LOGGER = logging.getLogger(__name__)
 class UserUnitTests(unittest.TestCase):
 
     def test_new_user(self):
-        user = User("bob", "bobpass")
+        user = User("bob", "bob@example.com", "bobpass")
         assert user.username == "bob"
 
     # pure function no side effects or integrations called
