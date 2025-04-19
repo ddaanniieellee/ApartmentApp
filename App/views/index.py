@@ -47,6 +47,10 @@ def index_page():
     # Not filtering dummy data; just passing all properties.
     return render_template('home.html', properties=properties)
 
+@index_views.route('/listings', methods=['GET'])
+def get_listing_page():
+    return render_template('listings.html')
+
 @index_views.route('/init', methods=['GET'])
 def init():
     initialize()
