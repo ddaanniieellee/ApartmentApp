@@ -7,9 +7,9 @@ from App.database import db
 def initialize():
     db.drop_all()
     db.create_all()
-    create_user('bob', 'bobpass')
-    jill=create_landlord("jill","jillpass")
-    mike=create_tenant("mike","mikepass")
+    create_user('bob','bob@gmail.com','bobpass')
+    jill=create_landlord("jill","jill@gmail.com","jillpass")
+    mike=create_tenant("mike","mike@gmail.com","mikepass")
     db.session.add(jill)
     db.session.add(mike)
     db.session.commit()

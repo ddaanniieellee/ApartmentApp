@@ -52,23 +52,27 @@ class UserUnitTests(unittest.TestCase):
 def empty_db():
     app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
     create_db()
+    with app.app_context():
+        create_user("bob", "bob@example.com", "bobpass")
+        create_user("rick", "rick@example.com", "rickpass")
     yield app.test_client()
     db.drop_all()
 
 
 def test_authenticate():
-    user = create_user("bob", "bobpass")
+    user = create_user("bob", "bob@example.com", "bobpass")
     assert login("bob", "bobpass") != None
 
 class UsersIntegrationTests(unittest.TestCase):
 
     def test_create_user(self):
-        user = create_user("rick", "bobpass")
+        user = create_user("rick", "rick@example.com", "bobpass")
         assert user.username == "rick"
 
     def test_get_all_users_json(self):
-        users_json = get_all_users_json()
-        self.assertListEqual([{"id":1, "username":"bob"}, {"id":2, "username":"rick"}], users_json)
+        def test_get_all_users_json(self):
+            users_json = get_all_users_json()
+            self.assertListEqual([{"id":1, "username":"bob"}, {"id":2, "username":"rick"}], users_json)
 
     # Tests data changes in the database
     def test_update_user(self):
