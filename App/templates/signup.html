@@ -50,6 +50,21 @@
     .signup-container button:hover {
       background-color: #0056b3;
     }
+    .signup-container select {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: inherit;
+      background-color: white;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 18px;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +85,14 @@
     <form action="/signup" method="POST">
       <input type="text" name="username" placeholder="username" required>
       <input type="password" name="password" placeholder="password" required>
+      <input type="email" name="email" placeholder="email" required>
+
+      <select name="role" placeholder="role" title="role" required>
+        <option value="" disabled selected>Select your role</option>
+        <option value="landlord">Landlord</option>
+        <option value="tenant">Tenant</option>
+      </select>
+      
       <button type="submit">Signup</button>
     </form>
   </div>

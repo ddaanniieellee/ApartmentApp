@@ -10,7 +10,10 @@ from App.models import User
 from App.database import db
 
 from App.controllers import (
-    login
+    login,
+    create_landlord, 
+    create_tenant,   
+    create_user       
 )
 
 auth_views = Blueprint('auth_views', __name__, template_folder='../templates')
@@ -40,22 +43,28 @@ def signup_user_view():
     data = request.form
     username = data.get('username')
     password = data.get('password')
+    email = data.get('email')
+    role = data.get('role')
 
-    # Check if the user already exists
     existing_user = User.query.filter_by(username=username).first()
     if existing_user:
         flash('Username already exists!')
         return render_template('signup.html') 
-    else:
-        try:
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('User Created!')
-            return render_template('index.html')
-        except IntegrityError:
-            db.session.rollback()
-            return render_template('signup.html')
+
+    try:
+        if role == 'tenant':
+            new_user = create_tenant(username, email, password)
+            flash('New Tenant User Created!')
+        elif role == 'landlord':
+            new_user = create_landlord(username, email, password)
+            flash('New Landlord User Created!')
+
+        return render_template('home.html')
+
+    except IntegrityError:
+        db.session.rollback()
+        flash("Signup failed. Please try again.")
+        return render_template('signup.html')
 
 @auth_views.route('/login', methods=['GET'])
 def login_page():
@@ -66,11 +75,12 @@ def login_user(username, password):
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
         token = create_access_token(identity=username)
-        response = jsonify(access_token=token)
-        flash('Login Successful')
+        response = redirect(url_for('index_views.index_page'))
         set_access_cookies(response, token)
+        flash('Login Successful')
+        
 
-        return render_template('index.html', response=response, token=token)
+        return response
 
     flash('Bad username or password given')
     return render_template('login.html'), 401
