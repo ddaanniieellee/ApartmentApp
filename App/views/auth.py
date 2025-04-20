@@ -1,6 +1,6 @@
 from sqlite3 import IntegrityError
 from flask import Blueprint, render_template, jsonify, request, flash, send_from_directory, flash, redirect, url_for
-from flask_jwt_extended import create_access_token, jwt_required, current_user, unset_jwt_cookies, set_access_cookies
+from flask_jwt_extended import create_access_token, jwt_required, current_user, unset_jwt_cookies, set_access_cookies, get_jwt_identity
 
 from App.controllers.user import get_all_users
 
@@ -99,6 +99,13 @@ def logout_action():
     flash("Logged Out!")
     unset_jwt_cookies(response)
     return response
+
+@auth_views.route('/myproperties/<int:id>', methods=['GET'])
+@jwt_required()
+def my_properties_page(id):
+    user_id = get_jwt_identity() 
+    user = User.query.get(user_id)   
+    return render_template('myproperties.html', user=user, id=id)
 
 '''
 API Routes
