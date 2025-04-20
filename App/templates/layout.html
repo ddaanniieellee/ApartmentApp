@@ -10,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
     <style>
-      /* Inline styles - you can also put these in style.css */
       nav .brand-logo {
         font-weight: 600;
         font-size: 1.8rem;
@@ -21,43 +20,50 @@
     </style>
   </head>
   <body>
-    <nav class="blue-grey darken-3">
+    <nav class = "blue-grey lighten-1">
       <div class="nav-wrapper container">
         {% block brand %}
-          <!-- Default brand block: a clickable logo that uses the brand_text block -->
-          <a href="/" class="brand-logo left">
-            {% block brand_text %}Apartment Reviews{% endblock %}
-          </a>
+        <a href="/" class="brand-logo left" style="display: flex; align-items: center;">
+          <img src="{{ url_for('static', filename='images/Roommate_ratings_2.png') }}"
+               alt="Apartment Reviews Logo"
+               style="height: 70px;">
+        </a>
         {% endblock %}
-        <!-- Navigation links on the right -->
+        
         <ul id="nav-mobile" class="right">
           <li><a href="/">Home</a></li>
           <li><a href="/listings">Listings</a></li>
-          <li><a href="/addproperty">Add Property</a></li>
-          <li><a href="/browse">Browse Property</a></li>
+        
+            {% if is_landlord %}
+            <li><a href="/addproperty">Add Property</a></li>
+            <li><a href="/myproperties/{{landlord_id}}">My Properties</a></li>
+          {% endif %}
+        
           {% if is_authenticated %}
             <li><a href="/logout">Logout</a></li>
           {% else %}
             <li><a href="/login">Login</a></li>
+            <li><a href="/signup">Sign Up</a></li>
           {% endif %}
         </ul>
+        
       </div>
     </nav>
-    
+
     <div class="container" id="content">
       {% block content %}{% endblock %}
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
-       M.AutoInit();
-       {% with messages = get_flashed_messages() %}
-         {% if messages %}
-           {% for message in messages %}
-             M.toast({html: '{{ message }}'});
-           {% endfor %}
-         {% endif %}
-       {% endwith %}
+      M.AutoInit();
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            M.toast({html: '{{ message }}'});
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
     </script>
   </body>
 </html>

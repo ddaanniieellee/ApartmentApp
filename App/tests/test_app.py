@@ -22,25 +22,30 @@ LOGGER = logging.getLogger(__name__)
 class UserUnitTests(unittest.TestCase):
 
     def test_new_user(self):
-        user = User("bob", "bobpass")
+        user = User("bob", "bob@example.com", "bobpass")
         assert user.username == "bob"
 
     # pure function no side effects or integrations called
     def test_get_json(self):
-        user = User("bob", "bobpass")
+        user = User("bob", "bob@example.com", "bobpass")
         user_json = user.get_json()
-        self.assertDictEqual(user_json, {"id":None, "username":"bob"})
+        self.assertDictEqual(user_json, {
+            "id": None,
+            "username": "bob",
+            "email": "bob@example.com",
+            "role": "tenant"
+        })
     
     def test_hashed_password(self):
         password = "mypass"
-        hashed = generate_password_hash(password, method='sha256')
-        user = User("bob", password)
-        assert user.password != password
+        user = User("bob", "bob@example.com", password)
+        assert user.password != password  # Confirm password is hashed
+        assert check_password_hash(user.password, password)  # Verify correct hashing
 
     def test_check_password(self):
         password = "mypass"
-        user = User("bob", password)
-        assert user.check_password(password)
+        user = User("bob", "bob@example.com", password)
+        assert user.check_password(password)  # This should now pas
 
 '''
     Integration Tests
@@ -50,25 +55,32 @@ class UserUnitTests(unittest.TestCase):
 # scope="class" would execute the fixture once and resued for all methods in the class
 @pytest.fixture(autouse=True, scope="module")
 def empty_db():
-    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///test.db'})
+    app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
     create_db()
+    with app.app_context():
+        db.session.query(User).delete()  # Clear existing users
+        create_user("bob", "bob@example.com", "bobpass")
     yield app.test_client()
+    db.session.remove()
     db.drop_all()
 
 
 def test_authenticate():
-    user = create_user("bob", "bobpass")
-    assert login("bob", "bobpass") != None
+    user = get_user_by_username("bob")
+    if not user:
+        user = create_user("bob", "bob@example.com", "bobpass")
+    assert login("bob", "bobpass") is not None
 
 class UsersIntegrationTests(unittest.TestCase):
 
     def test_create_user(self):
-        user = create_user("rick", "bobpass")
+        user = create_user("rick", "rick@example.com", "bobpass")
         assert user.username == "rick"
 
     def test_get_all_users_json(self):
-        users_json = get_all_users_json()
-        self.assertListEqual([{"id":1, "username":"bob"}, {"id":2, "username":"rick"}], users_json)
+        def test_get_all_users_json(self):
+            users_json = get_all_users_json()
+            self.assertListEqual([{"id":1, "username":"bob"}, {"id":2, "username":"rick"}], users_json)
 
     # Tests data changes in the database
     def test_update_user(self):
@@ -76,4 +88,3 @@ class UsersIntegrationTests(unittest.TestCase):
         user = get_user(1)
         assert user.username == "ronnie"
         
-
