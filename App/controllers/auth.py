@@ -41,14 +41,17 @@ def add_auth_context(app):
             current_user = User.query.get(user_id)
             is_authenticated = current_user is not None
             is_landlord = current_user.role == 'landlord' if current_user else False
+            landlord_id = current_user.id if is_landlord else None
         except Exception as e:
             print(e)
             current_user = None
             is_authenticated = False
             is_landlord = False
+            landlord_id = None
 
         return dict(
             is_authenticated=is_authenticated,
             current_user=current_user,
-            is_landlord=is_landlord
+            is_landlord=is_landlord,
+            landlord_id=landlord_id
         )

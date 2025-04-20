@@ -34,8 +34,9 @@
           <li><a href="/">Home</a></li>
           <li><a href="/listings">Listings</a></li>
         
-          {% if is_landlord %}
+            {% if is_landlord %}
             <li><a href="/addproperty">Add Property</a></li>
+            <li><a href="/myproperties/{{landlord_id}}">My Properties</a></li>
           {% endif %}
         
           {% if is_authenticated %}
